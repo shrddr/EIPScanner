@@ -2,8 +2,12 @@
 // Created by Aleksey Timin on 11/21/19.
 //
 #include <system_error>
+#ifdef _WIN32 
+#include <Winsock2.h>
+#else
 #include <sys/socket.h>
 #include <netinet/in.h>
+#endif
 #include "UDPBoundSocket.h"
 
 namespace eipScanner {

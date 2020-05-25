@@ -2,11 +2,12 @@
 // Created by James Roth on 12/19/19.
 //
 
+#ifdef _WIN32
+#include <stdexcept>
+#endif
+
 #include "DPIFaultParameter.h"
-
 #include <utility>
-
-
 #include "utils/Buffer.h"
 
 namespace eipScanner {

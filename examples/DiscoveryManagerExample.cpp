@@ -10,14 +10,23 @@ using eipScanner::utils::Logger;
 using eipScanner::utils::LogLevel;
 
 int main() {
-	Logger::setLogLevel(LogLevel::DEBUG);
+#ifdef _WIN32
+	WSADATA wsaData;
+	if (WSAStartup(0x202, &wsaData) == 0)
+	{
+#endif
+		Logger::setLogLevel(LogLevel::DEBUG);
 
-	DiscoveryManager discoveryManager("172.28.255.255", 0xAF12, std::chrono::seconds(1));
-	auto devices = discoveryManager.discover();
+		DiscoveryManager discoveryManager("192.168.10.255", 0xAF12, std::chrono::seconds(1));
+		auto devices = discoveryManager.discover();
 
-	for (auto& device : devices) {
-		Logger(LogLevel::INFO) << "Discovered device: "
-			<< device.identityObject.getProductName()
-			<< " with address " << device.socketAddress.toString();
+		for (auto& device : devices) {
+			Logger(LogLevel::INFO) << "Discovered device: "
+				<< device.identityObject.getProductName()
+				<< " with address " << device.socketAddress.toString();
+		}
+#ifdef _WIN32
 	}
+	WSACleanup();
+#endif
 }

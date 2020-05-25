@@ -50,6 +50,13 @@ set(SOURCE_FILES
 add_library(EIPScanner SHARED ${SOURCE_FILES})
 add_library(EIPScannerS STATIC ${SOURCE_FILES})
 
+SET_TARGET_PROPERTIES(EIPScanner PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
+
+if (WIN32)
+        add_definitions(-DNOGDI)
+        target_link_libraries(EIPScanner ws2_32)
+endif (WIN32)
+
 set_target_properties(
         EIPScanner
         PROPERTIES

@@ -2,6 +2,9 @@
 // Created by Aleksey Timin on 12/11/19.
 //
 
+#ifdef _WIN32
+#include <stdexcept>
+#endif
 #include "DPIFaultObject.h"
 #include "utils/Buffer.h"
 

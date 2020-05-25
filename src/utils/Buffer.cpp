@@ -54,7 +54,7 @@ namespace utils {
 	}
 
 	Buffer &Buffer::operator<<(int16_t val) {
-		return *this << static_cast<uint16_t >(val);;
+		return *this << static_cast<uint16_t >(val);
 	}
 
 	Buffer &Buffer::operator>>(int16_t &val) {
@@ -78,6 +78,26 @@ namespace utils {
 
 		return *this;
 	}
+
+#ifdef _WIN32
+	Buffer& Buffer::operator>>(unsigned long& val) {
+		val = static_cast<unsigned long>(_buffer[_position++]);
+		val += static_cast<unsigned long>(_buffer[_position++] << 8);
+		val += static_cast<unsigned long>(_buffer[_position++] << 16);
+		val += static_cast<unsigned long>(_buffer[_position++] << 24);
+
+		return *this;
+	}
+
+	Buffer& Buffer::operator<<(unsigned long val) {
+		_buffer.push_back(static_cast<unsigned long>(val));
+		_buffer.push_back(static_cast<unsigned long>(val >> 8));
+		_buffer.push_back(static_cast<unsigned long>(val >> 16));
+		_buffer.push_back(static_cast<unsigned long>(val >> 24));
+
+		return *this;
+	}
+#endif
 
 	Buffer &Buffer::operator<<(int32_t val) {
 		return *this << static_cast<uint32_t >(val);;

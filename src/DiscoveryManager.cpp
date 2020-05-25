@@ -1,6 +1,15 @@
 //
 // Created by Aleksey Timin on 12/17/19.
 //
+
+#ifdef _WIN32
+#define CAST_CCHAR (const char *)
+#define EXPECTED_ERROR WSAETIMEDOUT
+#else
+#define EXPECTED_ERROR EAGAIN
+#define CAST_CCHAR
+#endif
+
 #include <system_error>
 #include <cerrno>
 
@@ -50,7 +59,14 @@ namespace eipScanner {
 				commonPacket.expand(std::vector<uint8_t>(data.begin()+EncapsPacket::HEADER_SIZE, data.end()));
 
 				for (int i=0; i < commonPacket.getItems().size(); ++i) {
+
 					Buffer buffer(commonPacket.getItems()[i].getData());
+
+					if (buffer.size() < 28) {
+						Logger(LogLevel::WARNING) << "bad commonPacket size, skipping: " << buffer.size() << " < 28";
+						continue;
+					}	
+
 					CipUint ignore;
 					sockets::EndPoint socketAddr("", 0);
 
@@ -79,7 +95,7 @@ namespace eipScanner {
 				}
 			}
 		} catch (std::system_error& er) {
-			if (er.code().value() != EAGAIN) {
+			if (er.code().value() != EXPECTED_ERROR) {
 				throw er;
 			}
 		}
@@ -88,11 +104,11 @@ namespace eipScanner {
 	}
 
 	sockets::BaseSocket::SPtr DiscoveryManager::makeSocket() const {
-		auto socket =  std::make_shared<UDPSocket>(_broadCastAddress);
+		auto socket = std::make_shared<UDPSocket>(_broadCastAddress);
 		socket->setRecvTimeout(_receiveTimout);
 
 		int broadcast = 1;
-		if(setsockopt(socket->getSocketFd(), SOL_SOCKET, SO_BROADCAST, &broadcast, sizeof(broadcast)) < 0) {
+		if(setsockopt(socket->getSocketFd(), SOL_SOCKET, SO_BROADCAST, CAST_CCHAR &broadcast, sizeof(broadcast)) < 0) {
 			throw std::system_error(errno, std::generic_category());
 		}
 

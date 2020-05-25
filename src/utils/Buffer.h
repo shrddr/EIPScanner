@@ -65,6 +65,11 @@ namespace utils {
 		Buffer& operator << (uint32_t val);
 		Buffer& operator >> (uint32_t& val);
 
+#ifdef _WIN32
+		Buffer& operator << (unsigned long val);
+		Buffer& operator >> (unsigned long& val);
+#endif
+
 		Buffer& operator << (int32_t val);
 		Buffer& operator >> (int32_t& val);
 

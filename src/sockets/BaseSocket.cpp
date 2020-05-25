@@ -2,8 +2,13 @@
 // Created by Aleksey Timin on 11/18/19.
 //
 
+#ifdef _WIN32 
+#include <Winsock2.h>
+#else
 #include <sys/socket.h>
 #include <sys/select.h>
+#endif
+
 #include <utility>
 #include <algorithm>
 #include <system_error>
@@ -36,8 +41,14 @@ namespace sockets {
 	void BaseSocket::setRecvTimeout(const std::chrono::milliseconds &recvTimeout) {
 		_recvTimeout = recvTimeout;
 
+#ifdef _WIN32
+		int tv = recvTimeout.count();
+		int sz = sizeof(tv);
+		setsockopt(_sockedFd, SOL_SOCKET, SO_RCVTIMEO, (const char*)&tv, sz);
+#else
 		timeval tv = makePortableInterval(recvTimeout);
 		setsockopt(_sockedFd, SOL_SOCKET, SO_RCVTIMEO, (const char*)&tv, sizeof tv);
+#endif	
 	}
 
 	timeval BaseSocket::makePortableInterval(const std::chrono::milliseconds &recvTimeout) {
@@ -51,9 +62,9 @@ namespace sockets {
 		.tv_usec =  static_cast<__time_t>((recvTimeout.count()%1000)*1000)
 
 #elif _WIN32
-		// not sure what the macro is for windows
-		.tv_sec = static_cast<_time64>(recvTimeout.count()/1000),
-		.tv_usec =  static_cast<_time64>((recvTimeout.count()%1000)*1000)
+		// not used for windows
+		.tv_sec = static_cast<long>(recvTimeout.count()/1000),
+		.tv_usec =  static_cast<long>((recvTimeout.count()%1000)*1000)
 #endif
 
 		};

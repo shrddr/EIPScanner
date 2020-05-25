@@ -2,6 +2,9 @@
 // Created by James Roth on 12/18/19.
 //
 
+#ifdef _WIN32
+#include <stdexcept>
+#endif
 #include "DPIFaultCode.h"
 
 

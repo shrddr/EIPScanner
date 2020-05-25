@@ -8,7 +8,11 @@
 #include <vector>
 #include <chrono>
 #include <memory>
+#ifdef _WIN32 
+#include <Winsock2.h>
+#else
 #include <netinet/in.h>
+#endif
 #include "BaseSocket.h"
 
 namespace eipScanner {

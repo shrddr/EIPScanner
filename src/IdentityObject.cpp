@@ -2,6 +2,10 @@
 // Created by Aleksey Timin on 12/8/19.
 //
 
+#ifdef _WIN32
+#include <stdexcept>
+#endif
+
 #include "IdentityObject.h"
 #include "utils/Buffer.h"
 

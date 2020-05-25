@@ -1,6 +1,11 @@
 //
 // Created by Aleksey Timin on 11/18/19.
 //
+
+#ifdef _WIN32
+#define NOMINMAX
+#endif
+
 #include <algorithm>
 #include <cassert>
 #include <cstdlib>
